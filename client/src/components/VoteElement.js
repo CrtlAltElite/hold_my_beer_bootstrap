@@ -3,7 +3,7 @@ import {Navigate} from 'react-router-dom'
 
 const thumbSize=900
 export default function VoteElement({vote, user}) {
-    if(!user.token)return <Navigate to="/login"/>
+    
     return (
         <div className="row">
         <div className="col-lg-4 col-md-12 mb-4 mb-lg-0">

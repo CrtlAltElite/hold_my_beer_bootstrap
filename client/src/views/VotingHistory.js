@@ -4,7 +4,7 @@ import VoteElement  from "../components/VoteElement";
 
 const VotingHistory = () => {
   const {user, setUser, votes} = useContext(UserContext)
-
+  if(!user?.token)return <Navigate to="/login"/>
   return (
     <div className="container">
       <div className="row justify-content-center">
@@ -24,7 +24,7 @@ const VotingHistory = () => {
                 >
                   Voting History
                 </a>
-                {votes.map((vote)=><VoteElement key={vote.vote_id} vote={vote}/>)}
+                {votes?.map((vote)=><VoteElement key={vote.vote_id} vote={vote}/>)}
               </li>
             </ul>
           </div>
