@@ -5,127 +5,71 @@ import errorMessages from "./errorStrings"
 
 const endpoint = "/video";
 
-function useGetVideos(){  
-    const [res, setRes] = useState({})
+async function apiGetVideos(){  
+    const response = await apiClient().get(endpoint)
+    console.log("inget videos",response.data)
+    return {   
+            "data":response.data?.videos ?? null,
+            "response_code":response.status,
+            "error":errorMessages[response.status] ?? ''
+        }
+    }
 
-    useEffect(()=>{
-        const runHook=async ()=>{
-            const response = await apiClient().get(endpoint)
-            console.log("inget videos",response.data)
-            setRes({   
-                    "data":response.data?.videos ?? null,
-                    "response_code":response.status,
-                    "error":errorMessages[response.status] ?? ''
-                })
-            }
-            runHook()
-            return
-        }, []
-    )
-    return res
+
+async function apiGetVideo(video_id){  
+    const response = await apiClient().get(endpoint+`/${video_id}`)
+    return {   
+            "data":response.data ?? null,
+            "response_code":response.status,
+            "error":errorMessages[response.status] ?? ''
+    }
 }
 
-function useGetVideo(video_id){  
-    const [res, setRes] = useState({})
-
-    useEffect(()=>{
-        const runHook=async ()=>{
-            const response = await apiClient().get(endpoint+`/${video_id}`)
-            setRes({   
-                    "data":response.data ?? null,
-                    "response_code":response.status,
-                    "error":errorMessages[response.status] ?? ''
-                })
-            }
-            runHook()
-            return
-        }, []
-    )
-    return res
+async function apiPostVideo(data, token){  
+    const response = await apiClientTokenAuth(token).post(endpoint, data)
+    return {   
+            "data":response.data ?? null,
+            "response_code":response.status,
+            "error":errorMessages[response.status] ?? ''
+    }
 }
 
-function usePostVideo(data, token){  
-    const [res, setRes] = useState({})
 
-    useEffect(()=>{
-        const runHook=async ()=>{
-            const response = await apiClientTokenAuth(token).post(endpoint, data)
-            setRes({   
-                    "data":response.data ?? null,
-                    "response_code":response.status,
-                    "error":errorMessages[response.status] ?? ''
-                })
-            }
-            runHook()
-            return
-        }, [token, data]
-    )
-    return res
+async function apiPutVideo(video_id,  data, token){  
+    const response = await apiClientTokenAuth(token).put(endpoint+`/${video_id}`, data)
+    return {   
+            "data":response.data ?? null,
+            "response_code":response.status,
+            "error":errorMessages[response.status] ?? ''
+    }
 }
 
-function usePutVideo(video_id,  data, token){  
-    const [res, setRes] = useState({})
-
-    useEffect(()=>{
-        const runHook=async ()=>{
-            const response = await apiClientTokenAuth(token).put(endpoint+`/${video_id}`, data)
-            setRes({   
-                    "data":response.data ?? null,
-                    "response_code":response.status,
-                    "error":errorMessages[response.status] ?? ''
-                })
-            }
-            runHook()
-            return
-        }, [video_id, data, token]
-    )
-    return res
+async function apiDeleteVideo(video_id, token){  
+    const response = await apiClientTokenAuth(token).delete(endpoint+`/${video_id}`)
+    return {   
+            "data":response.data ?? null,
+            "response_code":response.status,
+            "error":errorMessages[response.status] ?? ''
+    }
 }
+            
 
-function useDeleteVideo(video_id, token){  
-    const [res, setRes] = useState({})
-
-    useEffect(()=>{
-        const runHook=async ()=>{
-            const response = await apiClientTokenAuth(token).delete(endpoint+`/${video_id}`)
-            setRes({   
-                    "data":response.data ?? null,
-                    "response_code":response.status,
-                    "error":errorMessages[response.status] ?? ''
-                })
-            }
-            if(video_id && token) runHook()
-            return
-        }, [token, video_id]
-    )
-    return res
+async function apiGetVideosByUserID(user_id){  
+    const response = await apiClient().get(endpoint+`/user/${user_id}`)
+    return {   
+        "data":response.data?.videos ?? null,
+        "response_code":response.status,
+        "error":errorMessages[response.status] ?? ''
+    }
 }
-
-function useGetVideosByUserID(user_id){  
-    const [res, setRes] = useState({})
-
-    useEffect(()=>{
-        const runHook=async ()=>{
-            const response = await apiClient().get(endpoint+`/user/${user_id}`)
-            setRes({   
-                    "data":response.data?.videos ?? null,
-                    "response_code":response.status,
-                    "error":errorMessages[response.status] ?? ''
-                })
-            }
-            runHook()
-            return
-        }, [user_id]
-    )
-    return res
-}
+            
 
 export {
-    useGetVideos,
-    useGetVideo,
-    usePostVideo,
-    usePutVideo,
-    useDeleteVideo,
-    useGetVideosByUserID
+    apiGetVideos,
+    apiGetVideo,
+    apiPostVideo,
+    apiPutVideo,
+    apiDeleteVideo,
+    apiGetVideosByUserID
 
 }

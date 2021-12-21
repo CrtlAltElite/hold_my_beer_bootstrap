@@ -6,174 +6,92 @@ const endpoint = "/vote";
 
 
 
-function useGetVotes(){  
-    const [res, setRes] = useState()
-
-    useEffect(()=>{
-        const runHook=async ()=>{
-            const response = await apiClient().get(endpoint)
-            setRes({   
-                    "data":response.data.votes ?? null,
-                    "response_code":response.status,
-                    "error":errorMessages[response.status] ?? ''
-                })
-            }
-            runHook()
-            return
-        }, []
-    )
-    return res
-}
-
-function useGetVote(vote_id){  
-    const [res, setRes] = useState()
-
-    useEffect(()=>{
-        const runHook=async ()=>{
-            const response = await apiClient().get(endpoint+`/${vote_id}`)
-            setRes({   
-                    "data":response.data ?? null,
-                    "response_code":response.status,
-                    "error":errorMessages[response.status] ?? ''
-                })
-            }
-            runHook()
-            return
-        }, [vote_id]
-    )
-    return res
+async function apiGetVotes(){  
+    const response = await apiClient().get(endpoint)
+    return {   
+            "data":response.data.votes ?? null,
+            "response_code":response.status,
+            "error":errorMessages[response.status] ?? ''
+    }
 }
 
 
-function usePostVote(data, token){  
-    const [res, setRes] = useState()
+async function apiGetVote(vote_id){  
+    const response = await apiClient().get(endpoint+`/${vote_id}`)
+    return {   
+        "data":response.data ?? null,
+        "response_code":response.status,
+        "error":errorMessages[response.status] ?? ''
+    }
+}
+
+
+async function apiPostVote(data, token){  
+    const response = await apiClientTokenAuth(token).post(endpoint, data)
+    return {   
+            "data":response.data ?? null,
+            "response_code":response.status,
+            "error":errorMessages[response.status] ?? ''
+    }
+}
+
+async function apiPutVote(vote_id, data, token){  
+    const response = await apiClientTokenAuth(token).put(endpoint+`/${vote_id}`, data)
+    return {   
+            "data":response.data ?? null,
+            "response_code":response.status,
+            "error":errorMessages[response.status] ?? ''
+    }
+}
+
+async function apiDeleteVote(vote_id, token){  
+    const response = await apiClientTokenAuth(token).delete(endpoint+`/${vote_id}`)
+    return {   
+            "data":response.data ?? null,
+            "response_code":response.status,
+            "error":errorMessages[response.status] ?? ''
+    }
+}
     
-    useEffect(()=>{
-        const runHook=async ()=>{
-            const response = await apiClientTokenAuth(token).post(endpoint, data)
-            setRes({   
-                    "data":response.data ?? null,
-                    "response_code":response.status,
-                    "error":errorMessages[response.status] ?? ''
-                })
-            }
-            if (data.vote && data.video_id){runHook()}
-            
-            return
-        }, [data, token]
-    )
-    return res
-}
+async function apiGetUserVotes(user_id,flag){  
+    const response = await apiClient().get(`/vote/user/${user_id}`)
+    return {   
+            "data":response.data.votes ?? null,
+            "response_code":response.status,
+            "error":errorMessages[response.status] ?? ''
+        }
+    }
 
 
-function usePutVote(vote_id, data, token){  
-    const [res, setRes] = useState()
-
-    useEffect(()=>{
-        const runHook=async ()=>{
-            const response = await apiClientTokenAuth(token).put(endpoint+`/${vote_id}`, data)
-            setRes({   
-                    "data":response.data ?? null,
-                    "response_code":response.status,
-                    "error":errorMessages[response.status] ?? ''
-                })
-            }
-            if (data.vote && data.video_id && data.token){runHook()}
-            return
-        }, [vote_id, data, token]
-    )
-    return res
-}
-
-function useDeleteVote(vote_id, token){  
-    const [res, setRes] = useState()
-
-    useEffect(()=>{
-        const runHook=async ()=>{
-            const response = await apiClientTokenAuth(token).delete(endpoint+`/${vote_id}`)
-            setRes({   
-                    "data":response.data ?? null,
-                    "response_code":response.status,
-                    "error":errorMessages[response.status] ?? ''
-                })
-            }
-            if (vote_id && token) runHook()
-            return
-        }, [token]
-    )
-    return res
-}
-
-
-function useGetUserVotes(user_id,flag){  
-    const [res, setRes] = useState()
-
-    useEffect(()=>{
-        const runHook=async ()=>{
-            const response = await apiClient().get(`/vote/user/${user_id}`)
-            setRes({   
-                    "data":response.data.votes ?? null,
-                    "response_code":response.status,
-                    "error":errorMessages[response.status] ?? ''
-                })
-            }
-            if(user_id) runHook()
-            return
-        }, [user_id,flag]
-    )
-    return res
-}
-
-function useGetUserVotesVerbose(user_id){  
-    const [res, setRes] = useState()
-
-    useEffect(()=>{
-        const runHook=async ()=>{
-            const response = await apiClient().get(`/vote/user/video/${user_id}`)
-            setRes({   
-                    "data":response.data.votes ?? null,
-                    "response_code":response.status,
-                    "error":errorMessages[response.status] ?? ''
-                })
-            }
-            runHook()
-            return
-        }, []
-    )
-    return res
+async function apiGetUserVotesVerbose(user_id){  
+    const response = await apiClient().get(`/vote/user/video/${user_id}`)
+    return {   
+            "data":response.data.votes ?? null,
+            "response_code":response.status,
+            "error":errorMessages[response.status] ?? ''
+    }
 }
 
 
 
-function useGetVotesByVideoUser(user_id, video_id){  
-    const [res, setRes] = useState()
-    
-    useEffect(()=>{
-        const runHook=async ()=>{
-            const response = await apiClient().get(`/vote/user/video/${user_id}/${video_id}`)
-            setRes({   
-                    "data":response.data ?? null,
-                    "response_code":response.status,
-                    "error":errorMessages[response.status] ?? ''
-                })
-            }
-            runHook()
-            return
-        }, [user_id, video_id]
-    )
-    return res
-}
-
+async function apiGetVotesByVideoUser(user_id, video_id){  
+    const response = await apiClient().get(`/vote/user/video/${user_id}/${video_id}`)
+    return {   
+            "data":response.data ?? null,
+            "response_code":response.status,
+            "error":errorMessages[response.status] ?? ''
+        }
+    }
 
 
 
 export {
-    useGetVotes,
-    useGetVote,
-    usePostVote,
-    usePutVote,
-    useDeleteVote,
-    useGetUserVotes,
-    useGetUserVotesVerbose,
-    useGetVotesByVideoUser
+    apiGetVotes,
+    apiGetVote,
+    apiPostVote,
+    apiPutVote,
+    apiDeleteVote,
+    apiGetUserVotes,
+    apiGetUserVotesVerbose,
+    apiGetVotesByVideoUser
 }

@@ -1,6 +1,20 @@
-import React from "react";
+import React, {useContext, useState} from "react";
+import { UserContext } from "../context/UserContext";
+import {Navigate} from "react-router-dom";
+import {getRank} from "../helpers";
+import VideoGallery from "../components/VideoGallery";
+import { useNavigate } from "react-router-dom";
+import EditProfileForm from "../forms/EditProfileForm";
 
 const Profile = () => {
+  const {user, setUser, votes} = useContext(UserContext)
+  const [doEdit, setDoEdit] =useState(false)
+  const navigate = useNavigate()
+  const upVotes=votes?.filter((v)=>v.vote===true).length
+  const downVotes=votes?.filter((v)=>v.vote===false).length
+  
+  console.log("up",upVotes, votes)
+  if (!user.token)return <Navigate to="/login"/>
   return (
     <div className="container">
       <div className="main-body">
@@ -9,18 +23,14 @@ const Profile = () => {
             <div className="card">
               <div className="card-body">
                 <div className="d-flex flex-column align-items-center text-center">
-                  <i className="fas fa-user-ninja fa-5x"></i>
-                  <div>profile pic here</div>
+                  {
+                    !user.img?(<i className="fas fa-user-ninja fa-5x"></i>)
+                    :
+                    (<div><img src={user.img} height='100px'/></div>)
+                  }
                   <div className="mt-3">
-                    <h4>First Last</h4>
-                    <p className="text-muted font-size-sm">@username</p>
-                    <button className="btn btn-primary">
-                      <i
-                        style={{ marginRight: 5 }}
-                        className="fas fa-user-plus"
-                      ></i>
-                      Follow
-                    </button>
+                    <h4 className="d-inline">{user.name}</h4> {doEdit?'':<button onClick={()=>{setDoEdit(true)}} className="btn btn-sm btn-primary rounded-circle"><i class="far fa-edit ml-2"></i></button>}
+                    <p className="text-muted font-size-sm">@{user.name.replace(/\s/g, '').toLowerCase()}</p>
                   </div>
                 </div>
               </div>
@@ -32,8 +42,7 @@ const Profile = () => {
                   <div className="mt-3">
                     <h4>About</h4>
                     <p className="text-muted font-size-sm">
-                      Mirror mirror on the wall, who is the most badass of them
-                      all?
+                      {user.bio ?? "You haven't created a profile yet, but that doesn't mean you are not a bad ass.  Go ahead crack a beer and do something wild!"}
                     </p>
                   </div>
                 </div>
@@ -61,7 +70,7 @@ const Profile = () => {
                     </svg>
                     Twitter
                   </h6>
-                  <span className="text-secondary">@twitterhandle</span>
+                  <span className="text-secondary">@{user.twitter_link??'Not Linked'}</span>
                 </li>
                 <li className="list-group-item d-flex justify-content-between align-items-center flex-wrap">
                   <h6 className="mb-0">
@@ -84,7 +93,7 @@ const Profile = () => {
                     </svg>
                     Instagram
                   </h6>
-                  <span className="text-secondary">instagramhandle</span>
+                  <span className="text-secondary">@{user.instagram_link ??'Not Linked'}</span>
                 </li>
                 <li className="list-group-item d-flex justify-content-between align-items-center flex-wrap">
                   <h6 className="mb-0">
@@ -105,7 +114,7 @@ const Profile = () => {
                     </svg>
                     Facebook
                   </h6>
-                  <span className="text-secondary">facebookhandle</span>
+                  <span className="text-secondary">@{user.facebook_link ??'Not Linked'}</span>
                 </li>
               </ul>
             </div>
@@ -118,7 +127,7 @@ const Profile = () => {
                   <div className="col-sm-3">
                     <h6 className="mb-0">Full Name</h6>
                   </div>
-                  <div className="col-sm-9 text-secondary">First Last</div>
+                  <div className="col-sm-9 text-secondary">{user.name}</div>
                 </div>
 
                 <hr />
@@ -126,7 +135,7 @@ const Profile = () => {
                   <div className="col-sm-3">
                     <h6 className="mb-0">Location</h6>
                   </div>
-                  <div className="col-sm-9 text-secondary">Location</div>
+                  <div className="col-sm-9 text-secondary">{user.location}</div>
                 </div>
               </div>
             </div>
@@ -138,39 +147,29 @@ const Profile = () => {
                     <h6 className="d-flex align-items-center mb-3">
                       Voting Stats
                     </h6>
-                    <small>Upvotes 94%</small>
+                    <small>Upvotes {Math.round(upVotes/(upVotes+downVotes)*100)}%</small>
                     <div className="progress mb-3" style={{ height: "5px" }}>
                       <div
                         className="progress-bar bg-primary"
                         role="progressbar"
-                        style={{ width: "80%" }}
-                        aria-valuenow={80}
+                        style={{ width: `${Math.round(upVotes/(upVotes+downVotes)*100)}%` }}
+                        aria-valuenow={Math.round(upVotes/(upVotes+downVotes)*100)}
                         aria-valuemin={0}
                         aria-valuemax={100}
                       />
                     </div>
-                    <small>Downvotes 6%</small>
+                    <small>Downvotes {Math.round(downVotes/(upVotes+downVotes)*100)}%</small>
                     <div className="progress mb-3" style={{ height: "5px" }}>
                       <div
                         className="progress-bar bg-primary"
                         role="progressbar"
-                        style={{ width: "72%" }}
-                        aria-valuenow={72}
+                        style={{ width: `${Math.round(downVotes/(upVotes+downVotes)*100)}%` }}
+                        aria-valuenow={Math.round(downVotes/(upVotes+downVotes)*100)}
                         aria-valuemin={0}
                         aria-valuemax={100}
                       />
                     </div>
-                    <small>Badass Level Gold</small>
-                    <div className="progress mb-3" style={{ height: "5px" }}>
-                      <div
-                        className="progress-bar bg-primary"
-                        role="progressbar"
-                        style={{ width: "89%" }}
-                        aria-valuenow={89}
-                        aria-valuemin={0}
-                        aria-valuemax={100}
-                      />
-                    </div>
+                    <small>{getRank(upVotes, downVotes)}</small>
                   </div>
                 </div>
               </div>
@@ -178,29 +177,27 @@ const Profile = () => {
                 <div className="card h-100">
                   <div className="card-body">
                     <h6 className="d-flex align-items-center mb-3">Videos</h6>
-                    <div>One video from user here</div>
-                    <button type="submit" className="btn btn-primary">
+                    <VideoGallery limit={1} user_id = {user.user_id}/>
+                    <br/>
+                    <button onClick={()=>navigate('/myvideos')} className="btn btn-primary">
                       Show more
                     </button>
                   </div>
                 </div>
               </div>
+              {
+                !doEdit ? '' :
+              
+              <div className="col-sm-12 mb-3">
+                <div className="card h-100">
+                    <div className="card-body">
+                      <EditProfileForm user={user} setDoEdit={setDoEdit} setUser={setUser}/>
+                    </div>
+                  </div>
+              </div>
+              }
             </div>
 
-            {/* <div className="row gutters-sm">
-              <div className="col-sm-6 mb-3">
-                <div className="card h-100">
-                  <div className="card-body">
-                    <h6 className="d-flex align-items-center mb-3">Posts</h6>
-                    <div>One post from user here</div>
-                    <button type="submit" className="btn btn-primary">
-                      Show more
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div> */}
-            
           </div>
         </div>
       </div>

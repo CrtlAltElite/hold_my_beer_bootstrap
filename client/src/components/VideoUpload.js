@@ -1,12 +1,11 @@
 import React, {useContext, useState} from "react";
 import {UserContext} from '../context/UserContext';
-import {usePostVideo} from '../api/apiVideo';
+import {apiPostVideo} from '../api/apiVideo';
 import Error from './Error';
 export default function VideoUpload() {
     const [uploadVideo, setUploadVideo] = useState({})
-    const [confirmVideoUpload, setConfirmVideoUpload] = useState({})
     const {user} = useContext(UserContext)
-    const video_upload=usePostVideo(confirmVideoUpload, user.token)
+    const [videoUpload, setVideoUpload] = useState({})
 
     function showUploadWidget() {
         window.cloudinary.openUploadWidget({
@@ -77,17 +76,17 @@ export default function VideoUpload() {
         let vid={...uploadVideo, "title":e.target.value};
         setUploadVideo(vid);
       }
-      const handleSubmitVideo=(e)=>{
+      const handleSubmitVideo=async (e)=>{
         e.preventDefault();
         e.stopPropagation();
-        const vid=uploadVideo
-        setConfirmVideoUpload(vid);
+        const apiRes = await apiPostVideo(uploadVideo, user.token)
+        setVideoUpload(apiRes)       
         setUploadVideo({});
       }
     
     return (
        <div>
-           <Error error={video_upload.errors}/>
+           <Error error={videoUpload.errors}/>
         {Object.keys(uploadVideo).length>0?
         <form>
           <div>

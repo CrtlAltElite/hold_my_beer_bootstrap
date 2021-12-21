@@ -16,7 +16,7 @@ const MyVideos = () => {
         <h3>{user.name}'s Videos</h3>
       </div>
       <VideoUpload/>
-      <VideoGallery user_id={user.user_id}/>
+      <VideoGallery user={user} user_id={user.user_id}/>
 
       
     </div>

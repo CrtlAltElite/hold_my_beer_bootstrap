@@ -44,6 +44,8 @@ class User(db.Model):
     facebook_link = db.Column(db.String)
     instagram_link = db.Column(db.String)
     twitter_link = db.Column(db.String)
+    bio = db.Column(db.Text)
+    img = db.Column(db.String)
     location = db.Column(db.String)
     created_on = db.Column(db.DateTime, default=dt.utcnow)
     modified_on = db.Column(db.DateTime, onupdate=dt.utcnow)
@@ -89,7 +91,7 @@ class User(db.Model):
         return f'<{self.user_id}|{self.email}>'
 
     def from_dict(self, data):
-         for field in ["email","password","facebook_link","instagram_link","twitter_link","location","name"]:
+         for field in ["email","password","facebook_link","instagram_link","twitter_link","location","name", "bio", "img"]:
             if field in data:
                 if field == "password":
                     setattr(self,field, self.hash_password(data[field]))
@@ -113,7 +115,9 @@ class User(db.Model):
             "instagram_link":self.instagram_link,
             "twitter_link":self.twitter_link,
             "location":self.location,
-            "name":self.name
+            "name":self.name,
+            "bio":self.bio,
+            "img":self.img
             }
 
 class Vote(db.Model):
@@ -203,6 +207,8 @@ class Video(db.Model):
             'creator_name':self.creator.name,
             'creator_id':self.creator.user_id,
             'creator_email':self.creator.email,
+            "creator_bio":self.creator.bio,
+            "creator_img":self.creator.img
             }
 
 
@@ -263,6 +269,7 @@ def post_user():
         }
     '''
     data = request.get_json()
+    print(data)
     if User.query.filter_by(email=data.get('email')).first():
         abort(422)
     new_user = User()
@@ -426,6 +433,7 @@ def post_vote():
     '''
         TokenAuth: Bearer TOKEN
         creates a new vote for the user owning the token.
+        Will also Update a vote
         an upvote is saved as True and downvote is saved as False
 
         expected payload:
@@ -437,9 +445,9 @@ def post_vote():
     data = request.get_json()
     data.update({'user_id':g.current_user.user_id})
     already_voted=Vote.query.filter_by(user_id=g.current_user.user_id, video_id=data['video_id']).first()
-    if already_voted:
-        abort(409)
-    new_vote = Vote()
+    
+    new_vote = already_voted if already_voted else Vote()
+    
     new_vote.from_dict(data)
     new_vote.save()
     return make_response("success",200)
@@ -507,22 +515,20 @@ def get_votes_video_titles_for_user(user_id):
     '''
         Return Voting history of user with <user_id> with attached information of the Videos
     # '''
-    # q=User.query.join(Vote, Vote.user_id == User.user_id)\
-    #     .join(Video, Video.video_id == Vote.video_id)\
-    #     .filter(User.user_id == user_id)\
-    #     .values(User.user_id.label('voter_id'),Vote.vote_id, Vote.video_id, Vote.user_id, Vote.created_on, Vote.modified_on, Video.title, Video.cloud_id)
+    votes = Vote.query.filter_by(user_id =user_id).join(Video, Vote.video_id==Video.video_id).with_entities(Vote.vote_id, Vote.video_id, Vote.created_on, Vote.modified_on, Video.title, Video.cloud_id, Vote.vote, Video.thumbnail_url).all()
+    def make_dict(list_element):
+        return {
+            "vote_id":list_element[0],
+            "video_id":list_element[1],
+            "vote_created_on":list_element[2],
+            "vote_modified_on":list_element[3],
+            "video_title":list_element[4],
+            "video_cloud_id":list_element[5],
+            "vote":list_element[6],
+            "thumbnail_url":list_element[7],
+        }
+    return make_response({"votes":[make_dict(vote) for vote in votes]},200)
 
-    q = Video.query.filter(Video.user_id==user_id)\
-        .join(Vote, Video.video_id==Vote.video_id)\
-        .join(User, User.user_id==Video.video_id).all()
-    print(q)
-    return make_response({"votes":[vote.to_dict() for vote in q]},200)
-
-
-    # q=User.query.join(Vote, Vote.user_id == User.user_id)\
-    #     .join(Video, Video.video_id == Vote.video_id)\
-    #     .with_entities(Vote.vote_id, Vote.video_id, Vote.user_id, Vote.created_on, Vote.modified_on, Video.title, Video.cloud_id)\
-    #     .filter(User.user_id == user_id).all()
 
 if __name__=="__main__":
     app.run(debug=True) 

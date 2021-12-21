@@ -1,8 +1,10 @@
-import React from "react";
+import React, {useContext} from "react";
 import holdmybeerlogo from "../images/holdmybeerlogops.png";
 import {Link} from "react-router-dom";
+import { UserContext } from "../context/UserContext";
 
 const Navbar = () => {
+  const {setUser}=useContext(UserContext);
   return (
     <div>
       <nav
@@ -36,11 +38,7 @@ const Navbar = () => {
                 Videos
               </Link>
             </li>
-            {/* <li className="nav-item">
-              <Link className="nav-link" to="/newsfeed">
-                Newsfeed
-              </Link>
-            </li> */}
+
             <li className="nav-item dropdown">
               <a
                 className="nav-link dropdown-toggle"                
@@ -58,9 +56,6 @@ const Navbar = () => {
                 <Link className="dropdown-item" to="/profile">
                   Profile
                 </Link>
-                {/* <Link className="dropdown-item" to="/myposts">
-                  My Posts
-                </Link> */}
 
                 <Link className="dropdown-item" to="/votinghistory">
                   Voting History
@@ -69,12 +64,10 @@ const Navbar = () => {
                 <Link className="dropdown-item" to="/myvideos">
                   My Videos
                 </Link>
-                <Link className="dropdown-item" to="/settings">
-                  Settings
-                </Link>
-                <Link className="dropdown-item" to="/logout">
+
+                <button className="dropdown-item" onClick={()=>{setUser({})}}>
                   Logout
-                </Link>
+                </button>
               </div>
             </li>
           </ul>

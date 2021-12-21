@@ -1,80 +1,100 @@
 import React, {useContext, useState} from 'react';
 import {UserContext} from '../context/UserContext'
 import {Image, Video} from 'cloudinary-react';
-import { usePostVote, usePutVote } from '../api/apiVote';
-import { useDeleteVideo } from '../api/apiVideo';
+import { apiDeleteVideo } from '../api/apiVideo';
 import { useNavigate } from "react-router-dom";
+import Button from "../components/Button";
 
 const CloseButton = () =>(                  
-    <button
-        type="button"
+    <Button
+        type="Button"
         className="btn btn-secondary"
         data-mdb-dismiss="modal"
     >
       Close
-  </button>)
+  </Button>)
 
-const handleNewVote=(vote, video, setUserVote, flag, setFlag)=>{
-  setUserVote({"video_id":video.video_id, "vote":vote })
-  setFlag(!flag)
-}
-
-const handleChangeVote=(vote, video, vote_id, setUserUpdateVote, flag, setFlag)=>{
-  setUserUpdateVote({"video_id":video.video_id, "vote":vote, "vote_id":vote_id})
-  setFlag(!flag)
-
-}
-
-const DownVoteButton = ({video, vote, userVote, setUserVote, setUserUpdateVote, flag, setFlag}) =>{
-  return(
-      <button id="downvotebtn" onClick={()=>{!vote?.vote ? handleNewVote(false,video, setUserVote, flag, setFlag ):handleChangeVote(false, video ,vote?.vote_id,setUserUpdateVote, flag,setFlag )}} type="button" disabled={vote?.vote==false} className={!vote || vote===null ? `btn btn-danger`  : vote?.vote===false ? `btn btn-danger` :`btn btn-secondary`}>
-          <i
-          style={{ marginRight: 5 }}
-          className="fas fa-thumbs-down"
-          />
-              {video.down_votes}
-
-      </button>
-    )}
-
-const UpVoteButton = ({video, vote, userVote, setUserVote, setUserUpdateVote, flag, setFlag}) =>{
-  return(
-    <button id="upvotebtn" onClick={()=>{!vote?.vote ? handleNewVote(true,video,  setUserVote, flag, setFlag ):handleChangeVote(true, video ,vote?.vote_id, setUserUpdateVote, flag,setFlag )}}type="button" disabled={vote?.vote==true} className={!vote || vote===null ? `btn btn-success` : vote?.vote===true ? `btn btn-success`:`btn btn-secondary`}>
-        {console.log("vote in button",vote?.vote)}
-        <i
-        style={{ marginRight: 5 }}
-        className="fas fa-thumbs-up"
-        />
-            {video.up_votes}
-    </button>)}
-const handleDeleteVideo=(e, setDeleteVideoProps, video, user, history)=>{
-  e.preventDefault();
-  e.stopPropagation();
-  setDeleteVideoProps({video_id: video.video_id ,token:user.token})
-  history(`${window.location.pathname}`)
+const handleDownVote=(vote, video, setCastVote)=>{
+  if (!vote || vote?.vote===null){
+    setCastVote({video_id: video.video_id, vote:false})
+  }else{
+    setCastVote({video_id: video.video_id, vote:null})
+  }
   
 }
-const DeleteButton = ({video, user, history}) =>{
-  const [deleteVideoProps, setDeleteVideoProps]=useState({})
-  useDeleteVideo(deleteVideoProps.video_id, deleteVideoProps.token)
+const handleUpVote=(vote, video, setCastVote)=>{
+  if (!vote || vote?.vote===null){
+    setCastVote({video_id: video.video_id, vote:true})
+
+    let upvotebtn = document.getElementById(`upvotebtn${video.video_id}`)
+    console.log("innerText",upvotebtn.textContent)
+    upvotebtn.textContent=parseInt(upvotebtn.textContent)+1
+    
+  }else{
+    setCastVote({video_id: video.video_id, vote:null})
+    let upvotebtn = document.getElementById(`upvotebtn${video.video_id}`)
+    console.log("innerText",upvotebtn.textContent)
+    upvotebtn.textContent=parseInt(upvotebtn.textContent)-1
+    if (vote.vote===false){
+
+      let downvotebtn = document.getElementById(`downvotebtn${video.video_id}`)
+      downvotebtn.textContent=parseInt(upvotebtn.textContent)-1
+    }
+  }
+  
+}
+const DownVoteButton = ({ video, vote, setCastVote}) =>{
+  return(
+      <Button onClick={()=>handleDownVote(vote, video, setCastVote,)} type="Button" disabled={vote?.vote==true} className={!vote || vote===null ? `btn btn-danger`  : vote?.vote===false ? `btn btn-secondary` : `btn btn-danger`}>
+          <i
+          id={`downvotebtn${video.video_id}`}
+          style={{ marginRight: 5 }}
+          className="fas fa-thumbs-down"
+          >
+              {video.down_votes}
+          </i>
+
+      </Button>
+    )}
+
+const UpVoteButton = ({video, vote, setCastVote}) =>{
+  return(
+    <Button onClick={()=>handleUpVote(vote, video, setCastVote)}  type="Button" disabled={vote?.vote==false} className={!vote || vote===null ? `btn btn-success` : vote?.vote===true ? `btn btn-secondary`:`btn btn-success`}>
+        <i
+        style={{ marginRight: 5, paddingInline:5}}
+        className="fas fa-thumbs-up"
+        id={`upvotebtn${video.video_id}`}
+        >
+            {video.up_votes}
+        </i>
+    </Button>)}
+
+const handleDeleteVideo=(e, video, user, history, videos, setVideos)=>{
+  e.preventDefault();
+  e.stopPropagation();
+  apiDeleteVideo(video.video_id, user.token).then(res=>{
+    if (Object.entries(res).length !== 0) {
+      console.log("HERE",videos)
+      let edit_vids = videos
+      edit_vids = edit_vids.filter(v => v !== video)
+      setVideos(edit_vids)
+  }})
+  
+}
+const DeleteButton = ({videos, setVideos, video, user, history}) =>{
   return(                      
-    <button type="button" onClick = {(e)=>handleDeleteVideo(e,setDeleteVideoProps,video, user, history)} className="btn btn-danger">
+    <Button type="Button" onClick = {(e)=>handleDeleteVideo(e,video, user, history, videos, setVideos,)} className="btn btn-danger " data-mdb-dismiss="modal">
         <i
         style={{ marginRight: 5 }}
         className="fas fa-minus-circle"
-        />
-        Delete
-    </button>
+        />Delete
+    </Button>
     )}
 
 export default function VideoModal(props) {
-    const {user} = useContext(UserContext)
-    const vote = props.votes?.find((vote)=>vote?.video_id==props.video.video_id)
-    const [userVote,setUserVote]=useState({})
-    const [userUpdateVote,setUserUpdateVote]=useState({}) 
-    const postVote = usePostVote(userVote,user.token)
-    const putVote = usePutVote(userUpdateVote?.vote_id,userUpdateVote,user.token)
+    const {user, votes, setCastVote} = useContext(UserContext)
     let history = useNavigate();
+    const user_vote =  votes?.find((vote)=>vote?.video_id==props.video.video_id)
     return (
             <div
             className="modal fade"
@@ -83,7 +103,6 @@ export default function VideoModal(props) {
             aria-labelledby="exampleModal2Label"
             aria-hidden="true"
             >
-              {console.log('the vote list in Video Modal',props.votes)}
             <div className="modal-dialog modal-lg">
               <div className="modal-content">
                 <div className="ratio ratio-16x9">
@@ -93,11 +112,11 @@ export default function VideoModal(props) {
                 <div className="text-center py-3">
                   <div className="row justify-content-center">
                     <div className="text-center py-2 col-2">
-                        <UpVoteButton flag={props.flag} setFlag={props.setFlag}  userVote={userVote} setUserUpdateVote={props.setUserUpdateVote} setUserVote={setUserVote} video={props.video} vote={vote}/>
+                        <UpVoteButton video={props.video} vote={user_vote} setCastVote={setCastVote} />
                     </div>
 
                     <div className="text-center py-2 col-2">
-                        {user.user_id===props.video.user_id ?<DeleteButton video={props.video} user={user}  history={history}/>:<DownVoteButton flag={props.flag} setFlag={props.setFlag}  setUserUpdateVote={props.setUserUpdateVote} userVote={userVote} setUserVote={setUserVote} video={props.video} vote={vote}/>}
+                        {user.user_id===props.video.user_id ?<DeleteButton videos={props.videos} setVideos={props.setVideos} video={props.video}  user={user}  history={history} />:<DownVoteButton video={props.video} vote={user_vote} setCastVote={setCastVote} />}
                     </div>
                   </div>
 

@@ -1,21 +1,11 @@
 import React from "react";
 import Navbar from "./Navbar";
+import LoggedOutNav from "./LoggedOutNav";
 // import Footer from './Footer';
 
-const Main = () => {
-  return (
-    <React.Fragment>
-      <header>
-        <Navbar />
-      </header>
-
-      <main>
-        
-      </main>
-
-      <footer>{/* <Footer /> */}</footer>
-    </React.Fragment>
-  );
+const Main = ({user}) => {
+      if(user?.token) return <Navbar />
+      return <LoggedOutNav/>
 };
 
 export default Main;

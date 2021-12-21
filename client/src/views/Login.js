@@ -1,7 +1,7 @@
 import React, {useState, useEffect, useContext} from "react";
 import beerpour from "../images/undraw_beer.svg";
 
-import {useLogin} from "../api/apiLogin"
+import useLogin from "../hooks/useLogin"
 import { Navigate } from "react-router";
 import {UserContext} from "../context/UserContext";
 import LoginForm from "../forms/LoginForm";
@@ -19,6 +19,8 @@ const Login = (props) => {
     ()=>{
       if (login.data?.token){
         setUser(login.data)
+      }else{
+        setCreds({})
       }
       return ()=>{
         if (!user && login.data?.token){setUser(login.data)}

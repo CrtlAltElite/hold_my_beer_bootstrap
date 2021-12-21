@@ -1,4 +1,4 @@
-import React, {useContext, useEffect} from "react";
+import React, {useContext} from "react";
 import "./App.css";
 import { Routes, Route } from "react-router-dom";
 import Main from "./components/Main";
@@ -10,12 +10,14 @@ import Register from "./views/Register";
 import Login from "./views/Login";
 import VotingHistory from "./views/VotingHistory";
 import MyVideos from "./views/MyVideos";
-import { useGetVideos } from "./api/apiVideo";
+import {UserContext} from "./context/UserContext"
 
 function App() {  
+  const {user, setUser} = useContext(UserContext)
   return (
     <React.Fragment>
-        <Main />
+    
+        <Main user={user} />
         <main className="container">
           <Routes>
             <Route path="/" element={<LandingPage />} />

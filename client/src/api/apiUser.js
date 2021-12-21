@@ -6,110 +6,58 @@ const endpoint = "/user";
 
 
 
-function useGetUsers(){  
-    const [res, setRes] = useState()
-
-    useEffect(
-        ()=>{
-            const runHook=async ()=>{
-            const response = await apiClient().get(endpoint)
-            setRes({   
-                    "data":response.data.users ?? null,
-                    "response_code":response.status,
-                    "error":errorMessages[response.status] ?? ''
-                })
-            }
-            runHook()
-            return
-        }, []
-    )
-    return res
+async function apiGetUsers(){  
+    const response = await apiClient().get(endpoint)
+    return {   
+            "data":response.data.users ?? null,
+            "response_code":response.status,
+            "error":errorMessages[response.status] ?? ''
+        }
+    
 }
 
-function useGetUser(user_id){  
-    const [res, setRes] = useState({})
-
-    useEffect(
-        ()=>{const runHook=async ()=>{
-            const response = await apiClient().get(endpoint+`/${user_id}`)
-            setRes({   
-                    "data":response.data ?? null,
-                    "response_code":response.status,
-                    "error":errorMessages[response.status] ?? ''
-                })
-            }
-            runHook()
-            return
-        }, [user_id]
-    )
-    return res
+async function apiGetUser(user_id){  
+    const response = await apiClient().get(endpoint+`/${user_id}`)
+    return {   
+            "data":response.data ?? null,
+            "response_code":response.status,
+            "error":errorMessages[response.status] ?? ''
+        }
 }
 
-function usePostUser(data){  
-    const [res, setRes] = useState({})
+async function apiPostUser(data){  
+    const response = await apiClient().post(endpoint, data)
+    return {   
+            "data":response.data ?? null,
+            "response_code":response.status,
+            "error":errorMessages[response.status] ?? ''
+        }
+    }
 
-    useEffect(
-        ()=>{
-            if (!data) return;
-            const runHook=async ()=>{
-            const response = await apiClient().post(endpoint, data)
-            setRes({   
-                    "data":response.data ?? null,
-                    "response_code":response.status,
-                    "error":errorMessages[response.status] ?? ''
-                })
-            }
-            runHook()
-            return
-        }, [data]
-    )
-    return res
+async function apiPutUser(user_id, data, token){  
+    const response = await apiClientTokenAuth(token).put(endpoint+`/${user_id}`, data)
+    return {   
+            "data":response.data ?? null,
+            "response_code":response.status,
+            "error":errorMessages[response.status] ?? ''
+        }
 }
 
-function usePutUser(user_id, data, token){  
-    const [res, setRes] = useState({})
-
-    useEffect(
-        ()=>{const runHook=async ()=>{
-            const response = await apiClientTokenAuth(token).put(endpoint+`/${user_id}`, data)
-            setRes({   
-                    "data":response.data ?? null,
-                    "response_code":response.status,
-                    "error":errorMessages[response.status] ?? ''
-                })
-            }
-            runHook()
-            return
-        }, [user_id, data, token]
-    )
-    return res
-}
-
-function useDeleteUser(user_id, token){  
-    const [res, setRes] = useState({})
-
-    useEffect(
-        ()=>{const runHook=async ()=>{
+async function apiDeleteUser(user_id, token){  
             const response = await apiClientTokenAuth(token).delete(endpoint+`/${user_id}`)
-            setRes({   
+            return {   
                     "data":response.data ?? null,
                     "response_code":response.status,
                     "error":errorMessages[response.status] ?? ''
-                })
-            }
-            runHook()
-            return
-        }, [user_id, token]
-    )
-    return res
+                }
 }
 
 
 export {
-    useGetUsers,
-    useGetUser,
-    usePostUser,
-    usePutUser,
-    useDeleteUser
+    apiGetUsers,
+    apiGetUser,
+    apiPostUser,
+    apiPutUser,
+    apiDeleteUser
     
 }

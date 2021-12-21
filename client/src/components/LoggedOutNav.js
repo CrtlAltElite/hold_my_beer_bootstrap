@@ -1,4 +1,6 @@
 import React from "react";
+import {Link} from "react-router-dom";
+import holdmybeerlogo from "../images/holdmybeerlogops.png";
 
 const LoggedOutNav = () => {
   return (
@@ -7,9 +9,10 @@ const LoggedOutNav = () => {
         style={{ marginBottom: 20 }}
         className="navbar navbar-expand-lg navbar-dark bg-primary"
       >
-        <a style={{ marginLeft: 20 }} className="navbar-brand" href="/">
-          Hold My Beer 🍺
-        </a>
+        <Link style={{ marginLeft: 20 }} className="navbar-brand" to="/">
+          Hold My Beer
+          <img style={{ marginLeft: 8, height: 35 }} src={holdmybeerlogo} alt="beer" />
+        </Link>
         <button
           className="navbar-toggler"
           type="button"
@@ -24,19 +27,19 @@ const LoggedOutNav = () => {
         <div className="collapse navbar-collapse" id="navbarNavDropdown">
           <ul className="navbar-nav">
             <li className="nav-item active">
-              <a className="nav-link" href="/">
+              <Link className="nav-link" to="/">
                 Home
-              </a>
+              </Link>
             </li>
             <li className="nav-item">
-              <a className="nav-link" href="/register">
+              <Link className="nav-link" to="/register">
                 Register
-              </a>
+              </Link>
             </li>
             <li className="nav-item">
-              <a className="nav-link" href="/login">
+              <Link className="nav-link" to="/login">
                 Login
-              </a>
+              </Link>
             </li>
           </ul>
         </div>

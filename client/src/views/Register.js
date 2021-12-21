@@ -1,7 +1,7 @@
 import React, {useState} from "react";
 import beer from "../images/beer-unsplash.jpg";
 
-import {usePostUser} from "../api/apiUser"
+import usePostUser from "../hooks/usePostUser";
 import {Navigate} from 'react-router-dom';
 import RegisterForm from "../forms/RegisterForm";
 
