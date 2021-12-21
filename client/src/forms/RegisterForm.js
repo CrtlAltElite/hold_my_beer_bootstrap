@@ -52,7 +52,6 @@ export default function RegisterForm(props) {
         initialValues={initialValues}
         validationSchema={FormSchema}
         onSubmit={(values) => {
-          console.log(values);
           handleSubmit(values);
         }}
       >

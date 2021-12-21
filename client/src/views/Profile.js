@@ -13,7 +13,6 @@ const Profile = () => {
   const upVotes=votes?.filter((v)=>v.vote===true).length
   const downVotes=votes?.filter((v)=>v.vote===false).length
   
-  console.log("up",upVotes, votes)
   if (!user.token)return <Navigate to="/login"/>
   return (
     <div className="container">

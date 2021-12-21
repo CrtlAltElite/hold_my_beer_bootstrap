@@ -7,7 +7,6 @@ const endpoint = "/video";
 
 async function apiGetVideos(){  
     const response = await apiClient().get(endpoint)
-    console.log("inget videos",response.data)
     return {   
             "data":response.data?.videos ?? null,
             "response_code":response.status,

@@ -74,7 +74,6 @@ const Register = () => {
                   initialValues={initialValues}
                   validationSchema={FormSchema}
                   onSubmit={(values) => {
-                    console.log(values);
                     handleSubmit(values);
                   }}
                 >

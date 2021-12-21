@@ -167,12 +167,10 @@ class Video(db.Model):
 
     @property
     def up_votes(self):
-        #TODO Not sure if this works
         return Vote.query.filter(Vote.video_id==self.video_id, Vote.vote==True).count()
 
     @property
     def down_votes(self):
-        #TODO Not sure if this works
         return Vote.query.filter(Vote.video_id==self.video_id, Vote.vote==False).count()
     
 
@@ -269,7 +267,6 @@ def post_user():
         }
     '''
     data = request.get_json()
-    print(data)
     if User.query.filter_by(email=data.get('email')).first():
         abort(422)
     new_user = User()
@@ -335,7 +332,6 @@ def get_video(video_id):
         
         returns Video with <video_id>'s information
     '''
-    print(Video.query.get(video_id).creator)
     return make_response(Video.query.get(video_id).to_dict(), 200)
 
 @app.post('/video')

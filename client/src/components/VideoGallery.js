@@ -18,7 +18,6 @@ function UserGallery(props) {
     useEffect(() =>{
       const runHook=async()=>{
         const res = await apiGetVideosByUserID(props.user_id)
-        console.log("in hook for refreshing videos")
         if (!props.limit) setVideos(res.data)
         if (props.limit) setVideos(res.data.slice(0,props.limit))
       }

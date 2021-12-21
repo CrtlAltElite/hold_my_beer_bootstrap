@@ -11,7 +11,6 @@ const MyVideos = () => {
   if (!user.token) return <Navigate to='/login'/>
   return (
     <div>
-      {console.log("user", user, "\n userid", user.user_id)}
       <div className="heading">
         <h3>{user.name}'s Videos</h3>
       </div>

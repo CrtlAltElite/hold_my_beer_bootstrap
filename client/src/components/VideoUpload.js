@@ -55,13 +55,10 @@ export default function VideoUpload() {
        },
         (err, info) => {
           if (!err) {    
-            console.log("Upload Widget event - ", info);
             if (info.event==="success"){
              if(info.info.resource_type !== "video"){
-               console.log("Must be a Video Try Again")
                return
               }
-              console.log(info.info)
               setUploadVideo({
                 "filename": info.info.original_filename,
                 "cloud_id": info.info.public_id,

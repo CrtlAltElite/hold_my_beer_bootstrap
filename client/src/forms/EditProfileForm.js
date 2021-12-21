@@ -67,9 +67,7 @@ export default function EditProfileForm(props) {
     usePutUser(props.user.user_id, editUserInfo, props.user.token)
 
     const handleSubmit = (values)=>{  
-        console.log("edit form submitted",values)
         let changed_values = Object.fromEntries(Object.entries(values).filter(([_, v]) => v.trim() != ''));
-        console.log("Changed!!!!  ",changed_values)
         setEditUserInfo(changed_values)
         props.setUser({...props.user, ...changed_values})
         props.setDoEdit(false)
@@ -80,7 +78,6 @@ export default function EditProfileForm(props) {
         initialValues={initialValues}
         validationSchema={FormSchema}
         onSubmit={(values) => {
-          console.log(values);
           handleSubmit(values);
         }}
       >

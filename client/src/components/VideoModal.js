@@ -27,13 +27,11 @@ const handleUpVote=(vote, video, setCastVote)=>{
     setCastVote({video_id: video.video_id, vote:true})
 
     let upvotebtn = document.getElementById(`upvotebtn${video.video_id}`)
-    console.log("innerText",upvotebtn.textContent)
     upvotebtn.textContent=parseInt(upvotebtn.textContent)+1
     
   }else{
     setCastVote({video_id: video.video_id, vote:null})
     let upvotebtn = document.getElementById(`upvotebtn${video.video_id}`)
-    console.log("innerText",upvotebtn.textContent)
     upvotebtn.textContent=parseInt(upvotebtn.textContent)-1
     if (vote.vote===false){
 
@@ -74,7 +72,6 @@ const handleDeleteVideo=(e, video, user, history, videos, setVideos)=>{
   e.stopPropagation();
   apiDeleteVideo(video.video_id, user.token).then(res=>{
     if (Object.entries(res).length !== 0) {
-      console.log("HERE",videos)
       let edit_vids = videos
       edit_vids = edit_vids.filter(v => v !== video)
       setVideos(edit_vids)
