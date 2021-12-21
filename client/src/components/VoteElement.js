@@ -1,5 +1,4 @@
 import React from 'react'
-import {Navigate} from 'react-router-dom'
 
 const thumbSize=900
 export default function VoteElement({vote, user}) {

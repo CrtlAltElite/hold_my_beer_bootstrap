@@ -520,8 +520,8 @@ def get_votes_video_titles_for_user(user_id):
         return {
             "vote_id":list_element[0],
             "video_id":list_element[1],
-            "vote_created_on":list_element[2],
-            "vote_modified_on":list_element[3],
+            "created_on":list_element[2],
+            "modified_on":list_element[3],
             "video_title":list_element[4],
             "video_cloud_id":list_element[5],
             "vote":list_element[6],

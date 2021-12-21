@@ -1,6 +1,7 @@
 import React, {useContext} from "react";
 import { UserContext } from "../context/UserContext";
 import VoteElement  from "../components/VoteElement";
+import {Navigate} from 'react-router-dom';
 
 const VotingHistory = () => {
   const {user, setUser, votes} = useContext(UserContext)
